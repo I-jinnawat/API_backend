@@ -1,16 +1,20 @@
-FROM node:7.7-alpine
+FROM node:16
 
-# install deps
-ADD package.json /tmp/package.json
-RUN cd /tmp && npm install
 
-# Copy deps
-RUN mkdir -p /opt/api-backend-app && cp -a /tmp/node_modules /opt/api-backend
+# Set working directory
+WORKDIR /opt/API_backend
 
-# Setup workdir
-WORKDIR /opt/api-backend-app
-COPY . /opt/api-backend-app
+# Add package.json and package-lock.json
+COPY package.json package-lock.json /opt/API_backend/
 
-# run
-EXPOSE 3000
+# Install dependencies
+RUN npm install
+
+# Copy the rest of the application code
+COPY . /opt/API_backend
+
+# Expose the port the app runs on
+EXPOSE 3001
+
+# Start the application
 CMD ["npm", "start"]
