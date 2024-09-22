@@ -1,15 +1,16 @@
 const mongoose = require("mongoose");
 
-const transactionSchema = new mongoose.Schema(
+const TransactionSchema = new mongoose.Schema(
 	{
-		type: { type: String, enum: ["รายรับ", "รายจ่าย"], required: true }, // ประเภท รายรับ/รายจ่าย
-		name: { type: String, required: true }, // ชื่อรายการ
-		amount: { type: Number, required: true }, // จำนวน
-		date: { type: Date, required: true }, // วันที่ใช้จ่าย
+		dateOfused: { type: String },
+		type: { type: String },
+		title: { type: String },
+		amount: { type: Number },
 	},
-	{
-		timestamps: true,
-	}
+	{ timestamps: true }
 );
+const TransactionModel =
+	mongoose.models.Transaction ||
+	mongoose.model("Transaction", TransactionSchema);
 
-module.exports = mongoose.model("transactions", transactionSchema);
+module.exports = TransactionModel;

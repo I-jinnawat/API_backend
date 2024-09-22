@@ -8,8 +8,12 @@ exports.read = async (req, res) => {
 
 		if (month) {
 			query = {
+				dateOfused: { $exists: true, $ne: "" },
 				$expr: {
-					$eq: [{ $month: "$date" }, parseInt(month)],
+					$eq: [
+						{ $month: { $dateFromString: { dateString: "$dateOfused" } } },
+						parseInt(month),
+					],
 				},
 			};
 		}
@@ -20,9 +24,9 @@ exports.read = async (req, res) => {
 		let totalOutcome = 0;
 
 		transactions.forEach((transaction) => {
-			if (transaction.type === "รายรับ") {
+			if (transaction.type === "income") {
 				totalIncome += transaction.amount;
-			} else if (transaction.type === "รายจ่าย") {
+			} else if (transaction.type === "expense") {
 				totalOutcome += transaction.amount;
 			}
 		});
