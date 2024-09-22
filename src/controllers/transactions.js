@@ -1,22 +1,31 @@
 const Transactions = require("../models/transactions");
 exports.list = async (req, res, next) => {
 	try {
-		const { month } = req.query;
-		let query = {};
-
-		if (month) {
-			query = {
-				$expr: {
-					$eq: [{ $month: "$date" }, parseInt(month)],
-				},
-			};
+		let { month } = req.query;
+		const currentDate = new Date();
+		const currentMonth = currentDate.getMonth() + 1;
+		if (!month) {
+			month = currentMonth;
 		}
 
+		const query = {
+			dateOfused: { $exists: true, $ne: "" },
+			$expr: {
+				$eq: [
+					{ $month: { $dateFromString: { dateString: "$dateOfused" } } },
+					parseInt(month),
+				],
+			},
+		};
+
 		const transactions = await Transactions.find(query).exec();
+		if (transactions === 0) {
+			res.status(404).json({ message: "Transaction not found" });
+		}
 		res.status(200).json(transactions);
 	} catch (e) {
 		console.error(e);
-		res.status(500).json({ message: "An error occurred" });
+		res.status(500).json({ message: e.message });
 	}
 };
 
